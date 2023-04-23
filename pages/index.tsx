@@ -1,24 +1,14 @@
 import type { NextPage } from 'next';
-import Head from 'next/head';
+import { useRouter } from 'next/router';
+import { useEffect } from 'react';
+import { ROUTES } from '../constants/routes';
 
 const Home: NextPage = () => {
-  return (
-    <>
-      <Head>
-        <title>Pokedex</title>
-        <meta name="description" content="Pokedex app" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main>
-        <h1 className="text-3xl font-bold underline">Hello pokedex!</h1>
-      </main>
-
-      <footer>
-        <p className="text-sm">App Footer</p>
-      </footer>
-    </>
-  );
+  const { push } = useRouter();
+  useEffect(() => {
+    push(ROUTES.pokemon);
+  });
+  return null;
 };
 
 export default Home;

@@ -1,6 +1,10 @@
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  XCircleIcon,
+} from '@heroicons/react/24/outline';
 import { useRouter } from 'next/router';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { PER_PAGE } from '../../constants/queries';
 import { ROUTES } from '../../constants/routes';
 import { Pokemon } from '../../pages/pokemon';
@@ -10,12 +14,23 @@ import Container from '../common/Container';
 import Stack from '../common/Stack';
 
 type PokemonListProps = {
+  page: number;
+  searchString: string;
   data: Pokemon[];
+  onCancelSearch: () => void;
+  onPageChange: (page: number) => void;
 };
 
-const PokemonList: React.FC<PokemonListProps> = ({ data }) => {
+const PokemonList: React.FC<PokemonListProps> = ({
+  page,
+  searchString,
+  data,
+  onCancelSearch,
+  onPageChange,
+}) => {
   const { push } = useRouter();
-  const [page, setPage] = useState(1);
+
+  const isSearching = searchString !== '';
 
   const totalItem = data.length;
   const pageSize = PER_PAGE;
@@ -33,18 +48,35 @@ const PokemonList: React.FC<PokemonListProps> = ({ data }) => {
 
   const handleNextClick = () => {
     if (!isLastPage) {
-      setPage(page + 1);
+      onPageChange(page + 1);
     }
   };
   const handlePreviousClick = () => {
     if (page > 1) {
-      setPage(page - 1);
+      onPageChange(page - 1);
     }
   };
 
   return (
     <Container>
-      <h2 className="mb-12 text-lg lg:text-2xl">Pokemon List</h2>
+      <Stack
+        direction="horizontal"
+        className="mb-12 justify-between items-center"
+      >
+        <h2 className="text-lg lg:text-2xl">
+          {isSearching ? 'Pokemon Search result' : 'Pokemon List'}
+        </h2>
+        {isSearching && (
+          <Stack
+            direction="horizontal"
+            className="cursor-pointer text-red items-center gap-2"
+            onClick={onCancelSearch}
+          >
+            <XCircleIcon width={16} />
+            <p className="text-sm">Cancel Search</p>
+          </Stack>
+        )}
+      </Stack>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {currentPageData.map((pokemon) => {
           return (
@@ -68,41 +100,55 @@ const PokemonList: React.FC<PokemonListProps> = ({ data }) => {
         <Button
           variant={page === 1 ? 'outline' : 'none'}
           isActive={page === 1}
-          onClick={() => setPage(1)}
+          onClick={() => onPageChange(1)}
         >
           1
         </Button>
-        <Button
-          variant={page === 2 ? 'outline' : 'none'}
-          isActive={page === 2}
-          onClick={() => setPage(2)}
-        >
-          2
-        </Button>
-        {page > 3 && !isLastPage ? (
+        {lastPage > 1 && (
+          <Button
+            variant={page === 2 ? 'outline' : 'none'}
+            isActive={page === 2}
+            onClick={() => onPageChange(2)}
+          >
+            2
+          </Button>
+        )}
+        {lastPage > 3 && page > 3 ? (
           <>
-            <p className="text-grey-300">...</p>
-            <Button variant="outline" isActive onClick={() => setPage(page)}>
+            {lastPage > 4 && <p className="text-grey-300">...</p>}
+            <Button
+              variant="outline"
+              isActive
+              onClick={() => onPageChange(page)}
+            >
               {page}
             </Button>
           </>
         ) : (
-          <Button
-            variant={page === 3 ? 'outline' : 'none'}
-            isActive={page === 3}
-            onClick={() => setPage(3)}
-          >
-            3
-          </Button>
+          lastPage > 2 && (
+            <Button
+              variant={page === 3 ? 'outline' : 'none'}
+              isActive={page === 3}
+              onClick={() => onPageChange(3)}
+            >
+              3
+            </Button>
+          )
         )}
-        <p className="text-grey-300">...</p>
-        <Button
-          variant={isLastPage ? 'outline' : 'none'}
-          isActive={isLastPage}
-          onClick={() => setPage(lastPage)}
-        >
-          {lastPage}
-        </Button>
+        {!isLastPage && lastPage > 3 && (
+          <>
+            {lastPage > 4 && page < lastPage - 1 && (
+              <p className="text-grey-300">...</p>
+            )}
+            <Button
+              variant={isLastPage ? 'outline' : 'none'}
+              isActive={isLastPage}
+              onClick={() => onPageChange(lastPage)}
+            >
+              {lastPage}
+            </Button>
+          </>
+        )}
         <Button onClick={handleNextClick} disabled={isLastPage}>
           <ChevronRightIcon width={24} />
         </Button>

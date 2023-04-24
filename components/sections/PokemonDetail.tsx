@@ -6,21 +6,25 @@ import Container from '../common/Container';
 import Profile from './pokemon-detail/Profile';
 import Stat from './pokemon-detail/Stat';
 import { ChevronLeftIcon } from '@heroicons/react/24/outline';
+import { Pokemon } from '../../pages/pokemon';
+import Image from 'next/image';
+import { camelCaseWord } from '../../utils/string';
 
 enum ActiveDetail {
   profile = 'Profile',
   stat = 'Statistics',
 }
-type PokemonDetailProps = NonNullable<unknown>;
+type PokemonDetailProps = { data: Pokemon };
 
-const PokemonDetail: React.FC<PokemonDetailProps> = ({}) => {
+const PokemonDetail: React.FC<PokemonDetailProps> = ({ data }) => {
   const [activeDetal, setActiveDetail] = useState(ActiveDetail.profile);
   const isProfile = activeDetal === ActiveDetail.profile;
   const isStat = activeDetal === ActiveDetail.stat;
   return (
     <Container>
-      <Link href={ROUTES.pokemon}>
-        <h2 className="mb-12 text-lg lg:text-2xl flex gap-10">
+      <div className="h-10" />
+      <Link href={ROUTES.pokemon} className="block w-fit">
+        <h2 className="mb-12 text-lg lg:text-xl flex gap-10">
           <ChevronLeftIcon width={24} />
           Zapet na prehled
         </h2>
@@ -51,12 +55,20 @@ const PokemonDetail: React.FC<PokemonDetailProps> = ({}) => {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-5 gap-16 bg-white p-6">
         <div className="col-span-2 p-3 lg:p-10 border-2 border-grey-500 rounded-lg">
-          <h1 className="text-center text-red text-lg md:text-4xl font-bold">
-            Charmander
+          <h1 className="text-center text-red text-lg md:text-2xl font-bold">
+            {camelCaseWord(data.name)}
           </h1>
+          <Image
+            className="mx-auto"
+            src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${data.id}.png`}
+            alt={data.name}
+            width={240}
+            height={240}
+            priority
+          />
         </div>
-        {isProfile && <Profile />}
-        {isStat && <Stat />}
+        {isProfile && <Profile data={data} />}
+        {isStat && <Stat data={data} />}
       </div>
     </Container>
   );

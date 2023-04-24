@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { HTMLAttributes } from 'react';
 import { Pokemon } from '../../pages/pokemon';
+import { camelCaseWord } from '../../utils/string';
 
 interface PokemonCardProps extends HTMLAttributes<HTMLDivElement> {
   data: Pokemon;
@@ -19,7 +20,7 @@ const PokemonCard: React.FC<PokemonCardProps> = ({ data, ...props }) => {
           height={240}
         />
       </div>
-      <div className="rounded-b-lg bg-red p-6">{name}</div>
+      <div className="rounded-b-lg bg-red p-6">{camelCaseWord(name)}</div>
     </div>
   );
 };

@@ -19,10 +19,12 @@ export type Pokemon = {
   image: string;
   abilities: string[];
   stats: { id: number; value: number }[];
+  types?: string[];
 };
 
 const PokemonListPage: NextPage = () => {
-  const [searchString, setSearchString] = useState<string | undefined>();
+  const [page, setPage] = useState(1);
+  const [searchString, setSearchString] = useState<string>('');
   const { data, loading: isLoadingPokemonList } = useGetPokemonList();
 
   const isLoading = isLoadingPokemonList;
@@ -70,17 +72,30 @@ const PokemonListPage: NextPage = () => {
 
     const filteredPokemons = pokemonDataList.filter((pokemon) => {
       return Object.values(pokemon).some((val) => {
-        return typeof val === 'string' && val.includes(searchString as string);
+        return (
+          typeof val === 'string' &&
+          val.includes(searchString?.toLowerCase() as string)
+        );
       });
     });
 
-    const pokemons = searchString ? filteredPokemons : pokemonDataList;
+    const pokemons = searchString !== '' ? filteredPokemons : pokemonDataList;
     return pokemons;
   }, [pokemonList, searchString]);
 
   const handleStringChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setSearchString(value);
+    setPage(1);
+  };
+
+  const handleCancelSearch = () => {
+    setSearchString('');
+    setPage(1);
+  };
+
+  const handlePage = (page: number) => {
+    setPage(page);
   };
 
   return (
@@ -92,8 +107,18 @@ const PokemonListPage: NextPage = () => {
       </Head>
 
       <main className="w-full bg-blue-100 p-6 pb-10">
-        <Search onStringChange={handleStringChange} />
-        <PokemonList data={pokemons} />
+        <Search
+          searchValue={searchString ?? ''}
+          onStringChange={handleStringChange}
+          onCancelClick={handleCancelSearch}
+        />
+        <PokemonList
+          page={page}
+          data={pokemons}
+          searchString={searchString ?? ''}
+          onCancelSearch={handleCancelSearch}
+          onPageChange={handlePage}
+        />
       </main>
     </Loader>
   );

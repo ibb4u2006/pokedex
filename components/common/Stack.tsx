@@ -9,11 +9,15 @@ interface StackProps extends HTMLAttributes<HTMLDivElement> {
 const Stack: React.FC<StackProps> = ({
   direction = 'vertical',
   children,
+  className,
   ...props
 }) => {
   const isVertical = direction === 'vertical';
   return (
-    <div className={classNames('flex', { 'flex-col': isVertical })} {...props}>
+    <div
+      className={classNames('flex', { 'flex-col': isVertical }, `${className}`)}
+      {...props}
+    >
       {children}
     </div>
   );

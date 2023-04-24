@@ -1,6 +1,7 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import PokemonDetail from '../../components/sections/PokemonDetail';
 
 const PokemonDetailPage: NextPage = () => {
   const { query } = useRouter();
@@ -13,8 +14,9 @@ const PokemonDetailPage: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="w-full bg-blue-100 p-6">
-        <>Pokemon {slug} detail page</>
+      <main className="w-full bg-blue-100 p-6 pb-10">
+        {slug}
+        <PokemonDetail />
       </main>
     </>
   );
